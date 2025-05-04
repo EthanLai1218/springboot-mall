@@ -30,15 +30,7 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, Object> map = new HashMap<>();
 
         // 查詢條件
-        if(productQueryParams.getCategory() != null) {
-            sql = sql + " AND category = :category";
-            map.put("category", productQueryParams.getCategory().name());
-        }
-
-        if(productQueryParams.getSearch() != null) {
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%"); // %不能直接寫在sql的語句裡，要寫在map的值裡面，這是spring JDBCTemplete的限制
-        }
+        sql = addFilteringSql(sql, map, productQueryParams);
 
         // 取得 count 值，使用 queryForObject
         Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
@@ -55,15 +47,7 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, Object> map = new HashMap<>();
 
         // 查詢條件
-        if(productQueryParams.getCategory() != null) {
-            sql = sql + " AND category = :category";
-            map.put("category", productQueryParams.getCategory().name());
-        }
-
-        if(productQueryParams.getSearch() != null) {
-            sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%"); // %不能直接寫在sql的語句裡，要寫在map的值裡面，這是spring JDBCTemplete的限制
-        }
+        sql = addFilteringSql(sql, map, productQueryParams);
 
         // 排序
         // 不需檢查是否NULL，因為在Controller層已設定預設值 // 使用ORDER BY只能用字串拼接方法，使用拼接語句時，前後記得留空白
@@ -154,5 +138,19 @@ public class ProductDaoImpl implements ProductDao {
         map.put("productId", productId);
 
         namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    private String addFilteringSql(String sql, Map<String, Object> map, ProductQueryParams productQueryParams) {
+        if(productQueryParams.getCategory() != null) {
+            sql = sql + " AND category = :category";
+            map.put("category", productQueryParams.getCategory().name());
+        }
+
+        if(productQueryParams.getSearch() != null) {
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + productQueryParams.getSearch() + "%"); // %不能直接寫在sql的語句裡，要寫在map的值裡面，這是spring JDBCTemplete的限制
+        }
+
+        return sql;
     }
 }
