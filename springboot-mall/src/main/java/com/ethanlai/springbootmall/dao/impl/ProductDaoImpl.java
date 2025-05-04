@@ -31,6 +31,7 @@ public class ProductDaoImpl implements ProductDao {
 
         Map<String, Object> map = new HashMap<>();
 
+        // 查詢條件
         if(productQueryParams.getCategory() != null) {
             sql = sql + " AND category = :category";
             map.put("category", productQueryParams.getCategory().name());
@@ -41,8 +42,14 @@ public class ProductDaoImpl implements ProductDao {
             map.put("search", "%" + productQueryParams.getSearch() + "%"); // %不能直接寫在sql的語句裡，要寫在map的值裡面，這是spring JDBCTemplete的限制
         }
 
-        // 不需檢查是否NULL，因為在Conroller層已設定預設值 // 使用ORDER BY只能用字串拼接方法，使用拼接語句時，前後記得留空白
+        // 排序
+        // 不需檢查是否NULL，因為在Controller層已設定預設值 // 使用ORDER BY只能用字串拼接方法，使用拼接語句時，前後記得留空白
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
+
+        // 分頁
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit", productQueryParams.getLimit());
+        map.put("offset", productQueryParams.getOffset());
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
