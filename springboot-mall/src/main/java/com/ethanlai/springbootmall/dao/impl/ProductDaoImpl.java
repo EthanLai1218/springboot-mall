@@ -38,8 +38,11 @@ public class ProductDaoImpl implements ProductDao {
 
         if(productQueryParams.getSearch() != null) {
             sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + productQueryParams.getSearch() + "%"); //%不能直接寫在sql的語句裡，要寫在map的值裡面，這是spring JDBCTemplete的限制
+            map.put("search", "%" + productQueryParams.getSearch() + "%"); // %不能直接寫在sql的語句裡，要寫在map的值裡面，這是spring JDBCTemplete的限制
         }
+
+        // 不需檢查是否NULL，因為在Conroller層已設定預設值 // 使用ORDER BY只能用字串拼接方法，使用拼接語句時，前後記得留空白
+        sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
