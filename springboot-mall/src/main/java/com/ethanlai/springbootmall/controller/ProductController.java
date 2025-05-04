@@ -1,6 +1,7 @@
 package com.ethanlai.springbootmall.controller;
 
 import com.ethanlai.springbootmall.constant.ProductCategory;
+import com.ethanlai.springbootmall.dto.ProductQueryParams;
 import com.ethanlai.springbootmall.dto.ProductRequest;
 import com.ethanlai.springbootmall.model.Product;
 import com.ethanlai.springbootmall.service.ProductService;
@@ -23,8 +24,11 @@ public class ProductController {
             @RequestParam(required = false) ProductCategory category,
             @RequestParam(required = false) String search
     ) {
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
 
-        List<Product> productList = productService.getProducts(category, search);
+        List<Product> productList = productService.getProducts(productQueryParams);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }

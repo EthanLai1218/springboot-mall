@@ -1,7 +1,7 @@
 package com.ethanlai.springbootmall.dao.impl;
 
-import com.ethanlai.springbootmall.constant.ProductCategory;
 import com.ethanlai.springbootmall.dao.ProductDao;
+import com.ethanlai.springbootmall.dto.ProductQueryParams;
 import com.ethanlai.springbootmall.dto.ProductRequest;
 import com.ethanlai.springbootmall.model.Product;
 import com.ethanlai.springbootmall.rowmapper.ProductRowMapper;
@@ -24,21 +24,21 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<Product> getProducts(ProductCategory category, String search) {
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, " +
                 "created_date, last_modified_date " +
                 "From product WHERE 1=1";
 
         Map<String, Object> map = new HashMap<>();
 
-        if(category != null) {
+        if(productQueryParams.getCategory() != null) {
             sql = sql + " AND category = :category";
-            map.put("category", category.name());
+            map.put("category", productQueryParams.getCategory().name());
         }
 
-        if(search != null) {
+        if(productQueryParams.getSearch() != null) {
             sql = sql + " AND product_name LIKE :search";
-            map.put("search", "%" + search + "%"); //%不能直接寫在sql的語句裡，要寫在map的值裡面，這是spring JDBCTemplete的限制
+            map.put("search", "%" + productQueryParams.getSearch() + "%"); //%不能直接寫在sql的語句裡，要寫在map的值裡面，這是spring JDBCTemplete的限制
         }
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
