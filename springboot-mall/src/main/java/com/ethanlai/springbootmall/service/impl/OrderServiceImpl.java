@@ -4,6 +4,7 @@ import com.ethanlai.springbootmall.dao.OrderDao;
 import com.ethanlai.springbootmall.dao.ProductDao;
 import com.ethanlai.springbootmall.dto.BuyItem;
 import com.ethanlai.springbootmall.dto.CreateOrderRequest;
+import com.ethanlai.springbootmall.model.Order;
 import com.ethanlai.springbootmall.model.OrderItem;
 import com.ethanlai.springbootmall.model.Product;
 import com.ethanlai.springbootmall.service.OrderService;
@@ -22,6 +23,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Override
+    public Order getOrderById(Integer orderId) {
+        Order order = orderDao.getOrderById(orderId);
+
+        List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderId);
+
+        order.setOrderItemList(orderItemList);
+
+        return order;
+    }
 
     @Transactional // 有修改到多張 table 的情況，一定要記得加上 @Transactional
     @Override
