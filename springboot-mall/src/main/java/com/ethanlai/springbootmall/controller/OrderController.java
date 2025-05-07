@@ -6,6 +6,8 @@ import com.ethanlai.springbootmall.model.Order;
 import com.ethanlai.springbootmall.model.Product;
 import com.ethanlai.springbootmall.service.OrderService;
 import com.ethanlai.springbootmall.util.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +18,14 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.List;
 
+@Tag(name = "訂單管理", description = "提供建立與查詢訂單的 API")
 @RestController
 public class OrderController {
 
     @Autowired
     private OrderService orderService;
 
+    @Operation(summary = "取得指定用戶的訂單列表")
     @GetMapping("/users/{userId}/orders")
     public ResponseEntity<Page<Order>> getOrders(
             @PathVariable Integer userId,
@@ -49,6 +53,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
+    @Operation(summary = "為指定用戶建立新訂單")
     @PostMapping("/users/{userId}/orders")
     public ResponseEntity<?> createOrder(@PathVariable Integer userId,
                                          @RequestBody @Valid CreateOrderRequest createOrderRequest) {
